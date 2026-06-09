@@ -6,34 +6,34 @@
     <title>D&D 5E 2014 角色构建器</title>
     <style>
         /* Apple 风格全局设定 */
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f7; color: #1d1d1f; margin: 0; padding: 60px 20px; line-height: 1.47; }
+        html { overflow-y: scroll; } /* 强制显示滚动条，防止页面因高度变化产生横向跳动 */
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f7; color: #1d1d1f; margin: 0; padding: 40px 20px; line-height: 1.47; }
         .max-w { max-width: 740px; margin: 0 auto; }
-        h1 { text-align: center; font-size: 40px; font-weight: 600; letter-spacing: -0.002em; margin-bottom: 50px; }
+        h1 { text-align: center; font-size: 36px; font-weight: 600; letter-spacing: -0.002em; margin-bottom: 40px; }
         
         /* 阶段卡片 */
-        .section { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 18px; padding: 40px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: none; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .section { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 18px; padding: 32px; margin-bottom: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: none; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         .section.visible { display: block; }
         .section.animate-in { opacity: 1; transform: translateY(0); }
-        .section h2 { font-size: 24px; font-weight: 600; margin-top: 0; margin-bottom: 24px; color: #1d1d1f; }
-        .section-desc { font-size: 14px; color: #86868b; margin-top: -15px; margin-bottom: 20px; }
+        .section h2 { font-size: 22px; font-weight: 600; margin-top: 0; margin-bottom: 16px; color: #1d1d1f; }
+        .section-desc { font-size: 13px; color: #86868b; margin-top: -10px; margin-bottom: 16px; }
 
         /* 提示条样式 */
-        .info-tip { background: rgba(0, 113, 227, 0.05); border: 1px solid rgba(0, 113, 227, 0.15); padding: 14px 18px; border-radius: 12px; font-size: 14px; color: #0071e3; margin-bottom: 20px; line-height: 1.5; font-weight: 500; }
+        .info-tip { background: rgba(0, 113, 227, 0.05); border: 1px solid rgba(0, 113, 227, 0.15); padding: 12px 16px; border-radius: 12px; font-size: 13px; color: #0071e3; margin-bottom: 16px; line-height: 1.5; font-weight: 500; }
 
         /* 控件样式 */
-        .form-row { display: flex; gap: 16px; margin-bottom: 24px; }
-        .form-group { flex: 1; margin-bottom: 24px; }
-        .form-row .form-group { margin-bottom: 0; }
-        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #1d1d1f; }
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 16px; font-size: 17px; border: 1px solid #d2d2d7; border-radius: 12px; background: #fff; color: #1d1d1f; box-sizing: border-box; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
-        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px; }
+        .form-row { display: flex; gap: 14px; margin-bottom: 20px; }
+        .form-group { flex: 1; margin-bottom: 0; min-width: 0; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1d1d1f; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; font-size: 16px; border: 1px solid #d2d2d7; border-radius: 12px; background: #fff; color: #1d1d1f; box-sizing: border-box; outline: none; transition: border-color 0.2s; -webkit-appearance: none; text-overflow: ellipsis; }
+        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 14px center; background-size: 14px; padding-right: 36px; }
         input:focus, select:focus { border-color: #0071e3; box-shadow: 0 0 0 4px rgba(0,113,227,0.1); }
         select option:disabled { color: #a1a1a6; font-style: italic; }
         
-        /* 盾牌开关右对齐特化 */
-        .shield-group { display: flex; align-items: center; justify-content: space-between; border: 1px solid #d2d2d7; border-radius: 12px; padding: 0 16px; background: #fff; height: 56px; }
-        .shield-group label { margin-bottom: 0; font-size: 16px; }
-        .shield-group.disabled { background: #f5f5f7; border-color: #e5e5ea; opacity: 0.6; }
+        /* 盾牌开关整行自适应布局 */
+        .shield-group { display: flex; align-items: center; justify-content: space-between; border: 1px solid #d2d2d7; border-radius: 12px; padding: 0 14px; background: #fff; height: 52px; box-sizing: border-box; transition: opacity 0.2s, background-color 0.2s; }
+        .shield-group label { margin-bottom: 0; font-size: 15px; font-weight: 500; }
+        .shield-group.disabled { background: #f5f5f7; border-color: #e5e5ea; opacity: 0.5; cursor: not-allowed; }
 
         /* 开关组件 */
         .toggle-switch { position: relative; display: inline-block; width: 52px; height: 32px; flex-shrink: 0;}
@@ -44,81 +44,116 @@
         input:checked + .slider:before { transform: translateX(20px); }
         input:disabled + .slider { cursor: not-allowed; }
 
-        /* 复选框样式 (塔莎规则) */
-        .tasha-check { display: flex; align-items: center; margin-bottom: 16px; background: #fbfbfd; padding: 12px 16px; border-radius: 12px; border: 1px solid #e5e5ea; }
-        .tasha-check input { width: 20px; height: 20px; margin-right: 12px; accent-color: #0071e3; cursor: pointer; }
-        .tasha-check label { margin-bottom: 0; font-size: 15px; cursor: pointer; font-weight: 500; }
+        /* 复选框样式 */
+        .tasha-check { display: flex; align-items: center; margin-bottom: 14px; background: #fbfbfd; padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5ea; }
+        .tasha-check input { width: 18px; height: 18px; margin-right: 10px; accent-color: #0071e3; cursor: pointer; flex-shrink: 0; }
+        .tasha-check label { margin-bottom: 0; font-size: 14px; cursor: pointer; font-weight: 500; }
         
-        /* 动态属性分配框 */
-        .tasha-box, .halfelf-box { display: none; margin-top: 16px; padding: 16px; background: rgba(0,113,227,0.05); border-radius: 12px; border: 1px solid rgba(0,113,227,0.2); }
+        .tasha-box, .halfelf-box { display: none; margin-top: 14px; padding: 14px; background: rgba(0,113,227,0.05); border-radius: 12px; border: 1px solid rgba(0,113,227,0.15); }
         .tasha-box label, .halfelf-box label { color: #0071e3; }
 
         /* 技能选择网格 */
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
-        .skill-item { display: flex; align-items: center; background: #fff; border: 1px solid #d2d2d7; padding: 12px 14px; border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 0; position: relative; }
-        .skill-item.disabled { background: #f5f5f7; border-color: #e5e5ea; cursor: not-allowed; opacity: 0.6; }
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .skill-item { display: flex; align-items: center; background: #fff; border: 1px solid #d2d2d7; padding: 10px 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; margin-bottom: 0; position: relative; }
+        .skill-item.disabled { background: #f5f5f7; border-color: #e5e5ea; cursor: not-allowed; opacity: 0.5; }
         .skill-item.bg-locked { border-color: #34c759; background: rgba(52, 199, 89, 0.03); cursor: not-allowed; }
-        .skill-item input { margin-right: 12px; width: 18px; height: 18px; accent-color: #0071e3; cursor: pointer; padding: 0; }
-        .skill-item input:disabled { cursor: not-allowed; }
-        .skill-item-name { font-size: 15px; font-weight: 500; color: #1d1d1f; flex: 1; }
-        .skill-stat-tag { font-size: 11px; color: #86868b; background: #f5f5f7; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: 600;}
-        .skill-source-tag { font-size: 10px; color: #fff; background: #34c759; padding: 1px 6px; border-radius: 4px; margin-left: 6px; font-weight: 500;}
-        .skill-class-tag { font-size: 10px; color: #0071e3; background: rgba(0, 113, 227, 0.08); padding: 1px 6px; border-radius: 4px; margin-left: 6px; font-weight: 500;}
+        .skill-item input { margin-right: 10px; width: 18px; height: 18px; accent-color: #0071e3; cursor: pointer; padding: 0; flex-shrink: 0; }
+        .skill-item-name { font-size: 14px; font-weight: 500; color: #1d1d1f; flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+        .skill-stat-tag { font-size: 10px; color: #86868b; background: #f5f5f7; padding: 1px 4px; border-radius: 4px; font-weight: 600;}
+        .skill-source-tag { font-size: 9px; color: #fff; background: #34c759; padding: 1px 4px; border-radius: 4px; font-weight: 500;}
+        .skill-class-tag { font-size: 9px; color: #0071e3; background: rgba(0, 113, 227, 0.08); padding: 1px 4px; border-radius: 4px; font-weight: 500;}
 
-        /* 拖拽与属性框样式 */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 10px; }
-        .stat-box { border: 2px solid #d2d2d7; padding: 16px; border-radius: 14px; background: #fff; display: flex; flex-direction: column; align-items: center; user-select: none; }
-        .stat-box label { margin: 0 0 8px 0; font-size: 14px; color: #86868b; text-align: center; pointer-events: none; }
-        .stat-value { font-size: 28px; font-weight: 600; color: #1d1d1f; height: 44px; width: 100%; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; pointer-events: auto; box-sizing: border-box; }
+        /* 属性九宫格布局 */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+        .stat-box { border: 2px solid #d2d2d7; padding: 12px 6px; border-radius: 14px; background: #fff; display: flex; flex-direction: column; align-items: center; user-select: none; }
+        .stat-box label { margin: 0 0 6px 0; font-size: 12px; color: #86868b; text-align: center; pointer-events: none; }
+        .stat-value { font-size: 24px; font-weight: 600; color: #1d1d1f; height: 38px; width: 100%; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; pointer-events: auto; box-sizing: border-box; touch-action: none; /* 移动端禁止滑动干预 */ }
         .stat-value[draggable="true"] { cursor: grab; background: #f5f5f7; }
         .stat-value[draggable="true"]:hover { background: #e8e8ed; }
-        .stat-value[draggable="true"]:active { cursor: grabbing; }
         .stat-value.drag-over { box-shadow: inset 0 0 0 2px #0071e3; background-color: rgba(0,113,227,0.05); }
         .stat-value.dragging { opacity: 0.4; box-shadow: inset 0 0 0 2px #86868b; }
-        .stat-value input[type="number"] { width: 80px; text-align: center; font-size: 24px; font-weight: 600; padding: 4px; border: 1px solid #0071e3; border-radius: 8px; background: #fff; pointer-events: auto; }
+        .stat-value input[type="number"] { width: 60px; text-align: center; font-size: 20px; font-weight: 600; padding: 2px; border: 1px solid #0071e3; border-radius: 8px; background: #fff; pointer-events: auto; touch-action: auto; }
 
-        /* 按钮组 */
-        .btn-continue { background: #0071e3; color: #fff; border: none; padding: 14px 28px; font-size: 17px; border-radius: 980px; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+        /* 按钮与交互元素 */
+        .btn-continue { background: #0071e3; color: #fff; border: none; padding: 14px 28px; font-size: 16px; border-radius: 980px; cursor: pointer; transition: background 0.2s; margin-top: 10px; font-weight: 500; }
         .btn-continue:hover { background: #0077ed; }
-        
-        .action-row { display: flex; gap: 12px; margin-bottom: 20px; }
-        .btn-roll { background: #e8e8ed; color: #1d1d1f; border: none; padding: 14px 24px; font-size: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; flex: 2; }
+        .action-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .btn-roll { background: #e8e8ed; color: #1d1d1f; border: none; padding: 12px 20px; font-size: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; flex: 2; }
         .btn-roll:hover { background: #d2d2d7; }
-        .btn-custom { background: #fff; color: #1d1d1f; border: 1px solid #d2d2d7; padding: 14px 24px; font-size: 15px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; flex: 1; }
+        .btn-custom { background: #fff; color: #1d1d1f; border: 1px solid #d2d2d7; padding: 12px 20px; font-size: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; flex: 1; }
         .btn-custom:hover { border-color: #86868b; }
         .btn-custom.active { background: #0071e3; color: #fff; border-color: #0071e3; }
-        .btn-custom.active:hover { background: #0077ed; }
-        .btn-wrapper { text-align: center; margin-top: 30px; border-top: 1px solid #d2d2d7; padding-top: 30px; }
+        
+        .btn-wrapper { text-align: center; margin-top: 24px; border-top: 1px solid #d2d2d7; padding-top: 24px; }
 
-        /* 结果展示 */
-        .results-header { text-align: center; margin-bottom: 30px; }
-        .results-header h2 { font-size: 32px; font-weight: 600; margin: 0; }
-        .results-header p { font-size: 17px; color: #86868b; margin: 8px 0 0 0; }
-        .results-overview { display: flex; gap: 16px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap;}
-        .overview-card { flex: 1; min-width: 120px; background: #fff; border: 1px solid #d2d2d7; border-radius: 16px; padding: 16px; text-align: center; }
-        .overview-card span { display: block; font-size: 28px; font-weight: 600; color: #1d1d1f; margin-top: 8px; }
-        .overview-card label { margin: 0; font-size: 12px; color: #86868b; }
+        /* 结果展示面 */
+        .results-header { text-align: center; margin-bottom: 24px; }
+        .results-header h2 { font-size: 28px; font-weight: 600; margin: 0; }
+        .results-header p { font-size: 15px; color: #86868b; margin: 6px 0 0 0; }
+        .results-overview { display: flex; gap: 12px; margin-bottom: 24px; justify-content: center; }
+        .overview-card { flex: 1; background: #fff; border: 1px solid #d2d2d7; border-radius: 14px; padding: 12px 6px; text-align: center; min-width: 0; }
+        .overview-card span { display: block; font-size: 22px; font-weight: 600; color: #1d1d1f; margin-top: 4px; }
+        .overview-card label { margin: 0; font-size: 11px; color: #86868b; }
         
-        .attr-result { background: #fff; border: 1px solid #d2d2d7; border-radius: 18px; padding: 24px; margin-bottom: 24px;}
-        .attr-result h3 { margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: #1d1d1f; }
+        .attr-result { background: #fff; border: 1px solid #d2d2d7; border-radius: 16px; padding: 20px; margin-bottom: 20px;}
+        .attr-result h3 { margin: 0 0 14px 0; font-size: 16px; font-weight: 600; color: #1d1d1f; }
         
-        .attr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
-        @media (max-width: 600px) { .attr-grid { grid-template-columns: 1fr; } }
-        .attr-card { background: #fbfbfd; border: 1px solid #e5e5ea; border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
-        .attr-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-        .attr-card-left { display: flex; flex-direction: column; }
-        .attr-card-name { font-size: 16px; font-weight: 600; color: #1d1d1f; margin-bottom: 6px; display: flex; align-items: center; }
-        .attr-card-detail { font-size: 13px; color: #86868b; line-height: 1.6;}
-        .attr-card-mod { font-size: 22px; font-weight: 600; color: #0071e3; background: rgba(0,113,227,0.08); padding: 6px 14px; border-radius: 12px; min-width: 44px; text-align: center; }
+        .attr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+        .attr-card { background: #fbfbfd; border: 1px solid #e5e5ea; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+        .attr-card-left { display: flex; flex-direction: column; min-width: 0; }
+        .attr-card-name { font-size: 14px; font-weight: 600; color: #1d1d1f; margin-bottom: 2px; display: flex; align-items: center; }
+        .attr-card-detail { font-size: 12px; color: #86868b; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .attr-card-mod { font-size: 18px; font-weight: 600; color: #0071e3; background: rgba(0,113,227,0.06); padding: 4px 10px; border-radius: 10px; min-width: 36px; text-align: center; flex-shrink: 0; }
         
-        .skills-res-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        @media (max-width: 600px) { .skills-res-grid { grid-template-columns: 1fr; } }
-        .skill-res-item { display: flex; justify-content: space-between; padding: 12px 16px; background: #fbfbfd; border: 1px solid #e5e5ea; border-radius: 12px; align-items: center;}
-        .skill-res-name { font-size: 15px; font-weight: 500; color: #1d1d1f; display: flex; align-items: center;}
-        .skill-res-mod { font-size: 16px; font-weight: 600; color: #0071e3; }
-        .prof-dot { margin-right: 8px; font-size: 12px; }
+        .skills-res-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .skill-res-item { display: flex; justify-content: space-between; padding: 10px 12px; background: #fbfbfd; border: 1px solid #e5e5ea; border-radius: 12px; align-items: center; min-width: 0;}
+        .skill-res-name { font-size: 13px; font-weight: 500; color: #1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px;}
+        .skill-res-mod { font-size: 14px; font-weight: 600; color: #0071e3; flex-shrink: 0; }
+        .prof-dot { margin-right: 6px; font-size: 11px; }
         .prof-dot.active { color: #f39c12; }
         .prof-dot.inactive { color: #d2d2d7; }
+
+        /* ================= 移动端适配响应式媒体查询 ================= */
+        @media (max-width: 600px) {
+            body { padding: 20px 12px; }
+            h1 { font-size: 26px; margin-bottom: 24px; }
+            .section { padding: 20px 14px; border-radius: 14px; margin-bottom: 14px; }
+            .section h2 { font-size: 18px; margin-bottom: 12px; }
+            
+            .form-row { flex-direction: column; gap: 14px; margin-bottom: 14px; }
+            .form-group { width: 100%; }
+            /* 移动端强制 input 和 select 字体大小为 16px 以上，阻止 iOS 点击自动放大导致卡片偏移 */
+            input[type="text"], select, input[type="number"] { padding: 12px; font-size: 16px !important; }
+            
+            .shield-group { height: 50px; }
+            .shield-group label { font-size: 14px; }
+            
+            .stats-grid { gap: 8px; }
+            .stat-box { padding: 8px 4px; border-radius: 10px; border-width: 1px; }
+            .stat-box label { font-size: 11px; margin-bottom: 4px; }
+            .stat-value { font-size: 20px; height: 32px; }
+            .stat-value input[type="number"] { width: 50px; font-size: 16px !important; padding: 0; }
+
+            .action-row { flex-direction: column; gap: 8px; }
+            .btn-roll, .btn-custom { width: 100%; padding: 12px; }
+            .btn-continue { width: 100%; padding: 12px; font-size: 15px; }
+
+            .results-header h2 { font-size: 22px; }
+            .results-header p { font-size: 13px; }
+            .results-overview { gap: 8px; }
+            .overview-card { padding: 8px 4px; }
+            .overview-card span { font-size: 18px; }
+            
+            .attr-grid { grid-template-columns: 1fr; gap: 8px; }
+            .attr-card { padding: 10px 12px; }
+            .skills-res-grid { grid-template-columns: 1fr; gap: 8px; }
+            .skill-res-item { padding: 8px 12px; }
+            
+            .skills-grid { grid-template-columns: 1fr; gap: 8px; }
+            .skill-item { padding: 10px; }
+            
+            .tasha-check label { font-size: 13px; }
+        }
     </style>
 </head>
 <body>
@@ -126,18 +161,19 @@
 <div class="max-w">
     <h1>构建你的英雄</h1>
 
+    <!-- 第 1 步：基础档案 -->
     <div id="step1" class="section visible animate-in">
         <h2>1. 基础档案</h2>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 14px;">
             <label>角色姓名</label>
             <input type="text" id="charName" placeholder="为你的冒险者起个名字..." oninput="autoUpdate()">
         </div>
         <div class="form-row">
-            <div class="form-group" style="flex: 0.4;">
+            <div class="form-group">
                 <label>等级</label>
                 <input type="number" id="charLevel" min="1" max="20" value="1" oninput="autoUpdate()">
             </div>
-            <div class="form-group" style="flex: 0.6;">
+            <div class="form-group">
                 <label>性别</label>
                 <select id="charGender" onchange="autoUpdate()">
                     <option value="男">男</option>
@@ -149,7 +185,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>初始职业</label>
-                <select id="classSelect" onchange="updateArmorOptions(); handleClassOrBackgroundChange();">
+                <select id="classSelect" onchange="handleClassOrBackgroundChange();">
                     <option value="fighter" selected>战士 (Fighter)</option>
                     <option value="barbarian">野蛮人 (Barbarian)</option>
                     <option value="paladin">圣武士 (Paladin)</option>
@@ -184,34 +220,35 @@
             </div>
         </div>
 
-        <div class="form-row" style="align-items: flex-end;">
-            <div class="form-group" style="flex: 2;">
+        <div class="form-row">
+            <div class="form-group">
                 <label>防具装备 (AC 来源)</label>
-                <select id="armorSelect" onchange="autoUpdate()" style="height: 56px;">
+                <select id="armorSelect" onchange="updateArmorOptions()">
                     <option value="none" data-type="none">无甲 / 职业能力 (Unarmored)</option>
                     <optgroup label="轻甲 (Light Armor)">
-                        <option value="padded" data-type="light">布甲 (Padded) - 基础 AC 11</option>
-                        <option value="leather" data-type="light">皮甲 (Leather) - 基础 AC 11</option>
-                        <option value="studded" data-type="light">镶嵌皮甲 (Studded) - 基础 AC 12</option>
+                        <option value="padded" data-type="light">布甲 (Padded) - AC 11</option>
+                        <option value="leather" data-type="light">皮甲 (Leather) - AC 11</option>
+                        <option value="studded" data-type="light">镶嵌皮甲 (Studded) - AC 12</option>
                     </optgroup>
                     <optgroup label="中甲 (Medium Armor)">
-                        <option value="hide" data-type="medium">兽皮甲 (Hide) - 基础 AC 12</option>
-                        <option value="chainshirt" data-type="medium">锁子甲衬衫 (Chain Shirt) - 基础 AC 13</option>
-                        <option value="scale" data-type="medium">鳞甲 (Scale Mail) - 基础 AC 14</option>
-                        <option value="breastplate" data-type="medium">胸甲 (Breastplate) - 基础 AC 14</option>
-                        <option value="halfplate" data-type="medium">半身板甲 (Half Plate) - 基础 AC 15</option>
+                        <option value="hide" data-type="medium">兽皮甲 (Hide) - AC 12</option>
+                        <option value="chainshirt" data-type="medium">锁子甲衬衫 (Chain Shirt) - AC 13</option>
+                        <option value="scale" data-type="medium">鳞甲 (Scale Mail) - AC 14</option>
+                        <option value="breastplate" data-type="medium">胸甲 (Breastplate) - AC 14</option>
+                        <option value="halfplate" data-type="medium">半身板甲 (Half Plate) - AC 15</option>
                     </optgroup>
                     <optgroup label="重甲 (Heavy Armor)">
-                        <option value="ring" data-type="heavy">环甲 (Ring Mail) - 基础 AC 14</option>
-                        <option value="chain" data-type="heavy">链甲 (Chain Mail) - 基础 AC 16</option>
-                        <option value="splint" data-type="heavy">条带甲 (Splint) - 基础 AC 17</option>
-                        <option value="plate" data-type="heavy">全身板甲 (Plate) - 基础 AC 18</option>
+                        <option value="ring" data-type="heavy">环甲 (Ring Mail) - AC 14</option>
+                        <option value="chain" data-type="heavy">链甲 (Chain Mail) - AC 16</option>
+                        <option value="splint" data-type="heavy">条带甲 (Splint) - AC 17</option>
+                        <option value="plate" data-type="heavy">全身板甲 (Plate) - AC 18</option>
                     </optgroup>
                 </select>
             </div>
-            <div class="form-group" style="flex: 1;">
+            <div class="form-group">
+                <label>额外防御</label>
                 <div class="shield-group" id="shieldGroupWrap">
-                    <label for="shieldCheck">装备盾牌 (+2)</label>
+                    <label for="shieldCheck">装备盾牌 (+2 AC)</label>
                     <label class="toggle-switch">
                         <input type="checkbox" id="shieldCheck" onchange="autoUpdate()">
                         <span class="slider"></span>
@@ -220,21 +257,33 @@
             </div>
         </div>
 
+        <div class="form-row" id="unarmoredTypeWrap" style="display: none;">
+            <div class="form-group">
+                <label style="color:#0071e3;">无甲防御类型 (未穿甲时生效)</label>
+                <select id="unarmoredSelect" onchange="checkShieldState(); autoUpdate();">
+                    <option value="standard">普通无甲 (10 + 敏捷)</option>
+                    <option value="mage_armor">法师护甲 / 龙族血脉等 (13 + 敏捷)</option>
+                    <option value="barbarian">野蛮人无甲防御 (10 + 敏捷 + 体质)</option>
+                    <option value="monk">武僧无甲防御 (10 + 敏捷 + 感知，不可持盾)</option>
+                </select>
+            </div>
+        </div>
+
         <div class="btn-wrapper" id="wrap-btn1">
             <button class="btn-continue" onclick="reveal(2)">继续选择种族</button>
         </div>
     </div>
 
-    <!-- 第 2 步：种族与血脉 -->
+    <!-- 第 2 步：血脉与种族 -->
     <div id="step2" class="section">
         <h2>2. 血脉与种族</h2>
         
         <div class="tasha-check">
             <input type="checkbox" id="tashaRules" onchange="updateRaceUI()">
-            <label for="tashaRules">使用《塔莎的万事坩埚》自选属性规则 (TCoE Custom Lineage)</label>
+            <label for="tashaRules">开启《塔莎》自选属性规则 (TCoE Custom)</label>
         </div>
 
-        <p class="section-desc" id="raceDesc">种族将为你提供独特的天生特质与核心属性加成（依据 D&D 5E 2014 规则）。</p>
+        <p class="section-desc" id="raceDesc">种族将提供独特的天生特质与属性加成。</p>
         
         <div class="form-group">
             <select id="raceSelect" onchange="updateRaceUI(); updateArmorOptions();">
@@ -249,15 +298,12 @@
                 <option value="tiefling">提夫林 (智力 +1, 魅力 +2)</option>
             </select>
             
-            <!-- 塔莎规则自定义加成 -->
             <div id="tashaBonuses" class="tasha-box">
                 <label>自定义属性分配</label>
-                <p style="font-size: 13px; color: #1d1d1f; margin: 4px 0 12px 0;">你的种族提供了 <b id="tashaPointsDesc"></b> 的加成。请将它们分配到不同的属性上：</p>
-                
+                <p style="font-size: 12px; color: #1d1d1f; margin: 4px 0 10px 0;">种族加成：<span id="tashaPointsDesc" style="font-weight:600;"></span>，下拉框已自动互斥。</p>
                 <div id="tashaDynamicSelects"></div>
             </div>
 
-            <!-- 原版半精灵额外属性选择 -->
             <div id="halfElfBonuses" class="halfelf-box">
                 <label>半精灵额外属性 (+1)</label>
                 <div class="form-row" style="margin-bottom: 0;">
@@ -286,37 +332,49 @@
     <!-- 第 3 步：属性分配 -->
     <div id="step3" class="section">
         <h2>3. 核心属性分配</h2>
-        <p class="section-desc">你可以将生成好的数值框<strong>直接拖拽</strong>进行位置交换；如果需要微调特定数值，请点击自定义。</p>
+        <p class="section-desc">可直接拖拽数值框交换位置，或点击自定义微调。</p>
         
         <div class="action-row">
-            <button class="btn-roll" onclick="rollStatPool()">🎲 生成 6 项属性 (4d6)</button>
+            <button class="btn-roll" onclick="rollStatPool()">🎲 4d6 掷点生成</button>
             <button id="btn-custom" class="btn-custom" onclick="toggleCustomize()">✏️ 自定义</button>
         </div>
 
         <div class="stats-grid">
             <div class="stat-box">
                 <label>力量 STR</label>
-                <div class="stat-value" id="val_str" data-stat="str" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">10</div>
+                <div class="stat-value" id="val_str" data-stat="str" draggable="true" 
+                     ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"
+                     ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div>
             </div>
             <div class="stat-box">
                 <label>敏捷 DEX</label>
-                <div class="stat-value" id="val_dex" data-stat="dex" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">10</div>
+                <div class="stat-value" id="val_dex" data-stat="dex" draggable="true" 
+                     ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"
+                     ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div>
             </div>
             <div class="stat-box">
                 <label>体质 CON</label>
-                <div class="stat-value" id="val_con" data-stat="con" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">10</div>
+                <div class="stat-value" id="val_con" data-stat="con" draggable="true" 
+                     ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"
+                     ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div>
             </div>
             <div class="stat-box">
                 <label>智力 INT</label>
-                <div class="stat-value" id="val_int" data-stat="int" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">10</div>
+                <div class="stat-value" id="val_int" data-stat="int" draggable="true" 
+                     ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"
+                     ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div>
             </div>
             <div class="stat-box">
                 <label>感知 WIS</label>
-                <div class="stat-value" id="val_wis" data-stat="wis" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">10</div>
+                <div class="stat-value" id="val_wis" data-stat="wis" draggable="true" 
+                     ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"
+                     ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div>
             </div>
             <div class="stat-box">
                 <label>魅力 CHA</label>
-                <div class="stat-value" id="val_cha" data-stat="cha" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">10</div>
+                <div class="stat-value" id="val_cha" data-stat="cha" draggable="true" 
+                     ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"
+                     ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div>
             </div>
         </div>
 
@@ -328,42 +386,37 @@
     <!-- 第 4 步：技能选择 -->
     <div id="step4" class="section">
         <h2>4. 技能熟练项</h2>
-        <p class="section-desc">根据规则，背景技能已自动锁定；你可以自由勾选可选的职业技能。</p>
-        <div class="info-tip" id="skillInfoTip">
-            加载中...
-        </div>
-        <div class="skills-grid" id="skillsContainer">
-            <!-- JS 动态生成 -->
-        </div>
+        <p class="section-desc">背景技能已由系统锁定，你可以自由勾选剩余的职业技能。</p>
+        <div class="info-tip" id="skillInfoTip">加载中...</div>
+        <div class="skills-grid" id="skillsContainer"></div>
         <div class="btn-wrapper" id="wrap-btn4">
             <button class="btn-continue" onclick="reveal(5)">完成构建，查看面板</button>
         </div>
     </div>
 
-
     <!-- 第 5 步：结算面板 -->
     <div id="step5" class="section" style="background: #ffffff;">
         <div class="results-header">
-            <h2 id="res_title">阿拉贡</h2>
+            <h2 id="res_title">冒险者</h2>
             <p id="res_subtitle">男 | 人类 | 战士</p>
         </div>
 
         <div class="results-overview">
-            <div class="overview-card"><label>最大生命值 (HP)</label><span id="res_hp">10</span></div>
-            <div class="overview-card"><label>护甲等级 (AC)</label><span id="res_ac">10</span></div>
-            <div class="overview-card"><label>熟练加值 (PB)</label><span id="res_pb" style="color:#0071e3;">+2</span></div>
+            <div class="overview-card"><label>最大生命值 HP</label><span id="res_hp">10</span></div>
+            <div class="overview-card"><label>护甲等级 AC</label><span id="res_ac">10</span></div>
+            <div class="overview-card"><label>熟练加值 PB</label><span id="res_pb" style="color:#0071e3;">+2</span></div>
         </div>
 
         <div class="attr-result">
-            <h3>综合属性调整值</h3>
+            <h3>综合属性与豁免</h3>
             <div id="res_stats_container"></div>
-            <p style="font-size: 12px; color: #86868b; margin-top: 16px; margin-bottom: 0;">
-                <span style="color:#f39c12; font-size: 14px;">★</span> 星号代表职业天生熟练的豁免检定。你的最终豁免加值为：对应属性调整值 + 熟练加值。
+            <p style="font-size: 11px; color: #86868b; margin-top: 12px; margin-bottom: 0;">
+                <span style="color:#f39c12; font-size: 12px;">★</span> 代表职业熟练豁免。最终豁免 = 属性调整值 + 熟练加值。
             </p>
         </div>
 
         <div class="attr-result" style="margin-bottom: 0;">
-            <h3>技能加值 (Skills)</h3>
+            <h3>技能加值表 (Skills)</h3>
             <div class="skills-res-grid" id="res_skills_container"></div>
         </div>
     </div>
@@ -377,12 +430,7 @@
     const backgroundNames = { soldier: "士兵", acolyte: "侍祭", charlatan: "骗子", criminal: "罪犯", entertainer: "艺人", folk_hero: "平民英雄", guild_artisan: "公会工匠", hermit: "隐士", noble: "贵族", outlander: "局外人", sage: "贤者", sailor: "水手", urchin: "孤儿" };
 
     const raceBonuses = { human: { str: 1, dex: 1, con: 1, int: 1, wis: 1, cha: 1 }, dwarf: { str: 0, dex: 0, con: 2, int: 0, wis: 0, cha: 0 }, elf: { str: 0, dex: 2, con: 0, int: 0, wis: 0, cha: 0 }, halfling: { str: 0, dex: 2, con: 0, int: 0, wis: 0, cha: 0 }, dragonborn: { str: 2, dex: 0, con: 0, int: 0, wis: 0, cha: 1 }, gnome: { str: 0, dex: 0, con: 0, int: 2, wis: 0, cha: 0 }, halfelf: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 2 }, halforc: { str: 2, dex: 0, con: 1, int: 0, wis: 0, cha: 0 }, tiefling: { str: 0, dex: 0, con: 0, int: 1, wis: 0, cha: 2 } };
-    
-    // Tasha 规则记录各种族拥有的分配点数
-    const tashaPointsMap = {
-        human: [1,1,1,1,1,1], dwarf: [2], elf: [2], halfling: [2], 
-        dragonborn: [2,1], gnome: [2], halfelf: [2,1,1], halforc: [2,1], tiefling: [2,1]
-    };
+    const tashaPointsMap = { human: [1,1,1,1,1,1], dwarf: [2], elf: [2], halfling: [2], dragonborn: [2,1], gnome: [2], halfelf: [2,1,1], halforc: [2,1], tiefling: [2,1] };
 
     const classBaseHp = { barbarian: 12, fighter: 10, paladin: 10, ranger: 10, bard: 8, cleric: 8, druid: 8, monk: 8, rogue: 8, warlock: 8, sorcerer: 6, wizard: 6 };
     const classSaves = { barbarian: ["str", "con"], fighter: ["str", "con"], paladin: ["wis", "cha"], ranger: ["str", "dex"], bard: ["dex", "cha"], cleric: ["wis", "cha"], druid: ["int", "wis"], monk: ["str", "dex"], rogue: ["dex", "int"], warlock: ["wis", "cha"], sorcerer: ["con", "cha"], wizard: ["int", "wis"] };
@@ -399,22 +447,22 @@
     const skillList = [
         { id: "athletics", name: "运动", eng: "Athletics", stat: "str" },
         { id: "acrobatics", name: "杂技", eng: "Acrobatics", stat: "dex" },
-        { id: "sleight", name: "巧手", eng: "Sleight of Hand", stat: "dex" },
+        { id: "sleight", name: "巧手", eng: "Sleight", stat: "dex" },
         { id: "stealth", name: "隐匿", eng: "Stealth", stat: "dex" },
         { id: "arcana", name: "奥秘", eng: "Arcana", stat: "int" },
         { id: "history", name: "历史", eng: "History", stat: "int" },
-        { id: "investigation", name: "调查", eng: "Investigation", stat: "int" },
+        { id: "investigation", name: "调查", eng: "Investig.", stat: "int" },
         { id: "nature", name: "自然", eng: "Nature", stat: "int" },
         { id: "religion", name: "宗教", eng: "Religion", stat: "int" },
-        { id: "animal", name: "驯兽", eng: "Animal Handling", stat: "wis" },
+        { id: "animal", name: "驯兽", eng: "Animal H.", stat: "wis" },
         { id: "insight", name: "洞悉", eng: "Insight", stat: "wis" },
         { id: "medicine", name: "医药", eng: "Medicine", stat: "wis" },
-        { id: "perception", name: "察觉", eng: "Perception", stat: "wis" },
+        { id: "perception", name: "察觉", eng: "Percept.", stat: "wis" },
         { id: "survival", name: "生存", eng: "Survival", stat: "wis" },
-        { id: "deception", name: "欺瞒", eng: "Deception", stat: "cha" },
-        { id: "intimidation", name: "威吓", eng: "Intimidation", stat: "cha" },
-        { id: "performance", name: "表演", eng: "Performance", stat: "cha" },
-        { id: "persuasion", name: "游说", eng: "Persuasion", stat: "cha" }
+        { id: "deception", name: "欺瞒", eng: "Decept.", stat: "cha" },
+        { id: "intimidation", name: "威吓", eng: "Intimid.", stat: "cha" },
+        { id: "performance", name: "表演", eng: "Perform.", stat: "cha" },
+        { id: "persuasion", name: "游说", eng: "Persuas.", stat: "cha" }
     ];
 
     const backgroundSkills = {
@@ -458,29 +506,67 @@
             html += `
             <div class="skill-item" id="item_${s.id}">
                 <input type="checkbox" id="skill_${s.id}" value="${s.id}" onchange="handleSkillClick(this)">
-                <span class="skill-item-name" id="name_${s.id}">${s.name} (${s.eng}) <span class="skill-stat-tag">${s.stat.toUpperCase()}</span></span>
+                <span class="skill-item-name" id="name_${s.id}">${s.name} <span class="skill-stat-tag">${s.stat.toUpperCase()}</span></span>
             </div>`;
         });
         container.innerHTML = html;
     }
 
+    // 更新盾牌的可用状态 (包含武僧无甲防具的特判)
+    function checkShieldState() {
+        const clsKey = document.getElementById('classSelect').value;
+        const raceKey = document.getElementById('raceSelect').value;
+        const armorKey = document.getElementById('armorSelect').value;
+        const unarmoredType = document.getElementById('unarmoredSelect').value;
+        const shieldCheck = document.getElementById('shieldCheck');
+        const shieldWrap = document.getElementById('shieldGroupWrap');
+
+        const allowedTypes = new Set([
+            ...(classArmorProf[clsKey] || []),
+            ...(raceArmorProf[raceKey] || [])
+        ]);
+
+        let canUseShield = allowedTypes.has('shield');
+
+        // 武僧无甲防御判定：不能拿盾牌
+        if (armorKey === 'none' && unarmoredType === 'monk') {
+            canUseShield = false;
+        }
+
+        if (canUseShield) {
+            shieldCheck.disabled = false;
+            shieldWrap.classList.remove('disabled');
+        } else {
+            shieldCheck.disabled = true;
+            shieldCheck.checked = false; // 强制置0
+            shieldWrap.classList.add('disabled'); // 强制置灰
+        }
+    }
+
     function handleClassOrBackgroundChange() {
+        const clsKey = document.getElementById('classSelect').value;
+        const unarmoredSelect = document.getElementById('unarmoredSelect');
+        
+        if (clsKey === 'barbarian') unarmoredSelect.value = 'barbarian';
+        else if (clsKey === 'monk') unarmoredSelect.value = 'monk';
+        else if (['wizard', 'sorcerer', 'warlock'].includes(clsKey)) unarmoredSelect.value = 'mage_armor';
+        else unarmoredSelect.value = 'standard';
+
         userSelectedClassSkills.clear(); 
         updateSkillsUI();
-        autoUpdate();
+        updateArmorOptions(); // 这里会连带触发 checkShieldState() 和 autoUpdate()
     }
 
     function updateSkillsUI() {
         const clsKey = document.getElementById('classSelect').value;
         const bgKey = document.getElementById('backgroundSelect').value;
-        
         const bgSkills = backgroundSkills[bgKey] || [];
         const clsRule = classSkillRules[clsKey] || { count: 2, list: [] };
 
         const bgSkillNames = bgSkills.map(id => skillList.find(s => s.id === id).name).join('、');
         document.getElementById('skillInfoTip').innerHTML = `
-            💼 <b>背景【${backgroundNames[bgKey]}】熟练：</b> ${bgSkillNames} (已由背景激活并自动锁定)<br>
-            ⚔️ <b>职业【${classNames[clsKey]}】可选：</b> 从本职技能中选择 <b>${clsRule.count}</b> 项。已选 <b><span id="clsCheckedCount">0</span> / ${clsRule.count}</b> 项。
+            💼 <b>背景锁定：</b> ${bgSkillNames}<br>
+            ⚔️ <b>职业可选：</b> 从本职技能中选 <b>${clsRule.count}</b> 项（已选 <b><span id="clsCheckedCount">0</span> / ${clsRule.count}</b>）
         `;
 
         let currentClassChecked = 0;
@@ -510,7 +596,7 @@
                 
                 const tag = document.createElement('span');
                 tag.className = 'skill-source-tag';
-                tag.innerText = '背景锁定';
+                tag.innerText = '背景';
                 nameEl.appendChild(tag);
             } else {
                 const isClassSkill = clsRule.list.includes(s.id);
@@ -557,7 +643,7 @@
         el.style.display = 'block';
         setTimeout(() => {
             el.classList.add('animate-in');
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 10);
         const prevBtnWrap = document.getElementById('wrap-btn' + (stepNum - 1));
         if(prevBtnWrap) prevBtnWrap.style.display = 'none';
@@ -572,8 +658,7 @@
         const clsKey = document.getElementById('classSelect').value;
         const raceKey = document.getElementById('raceSelect').value;
         const armorSelect = document.getElementById('armorSelect');
-        const shieldCheck = document.getElementById('shieldCheck');
-        const shieldWrap = document.getElementById('shieldGroupWrap');
+        const unarmoredWrap = document.getElementById('unarmoredTypeWrap');
 
         const allowedTypes = new Set([
             ...(classArmorProf[clsKey] || []),
@@ -603,18 +688,16 @@
 
         if (!currentValid) { armorSelect.value = 'none'; }
 
-        if (allowedTypes.has('shield')) {
-            shieldCheck.disabled = false;
-            shieldWrap.classList.remove('disabled');
+        if (armorSelect.value === 'none') {
+            unarmoredWrap.style.display = 'flex';
         } else {
-            shieldCheck.disabled = true;
-            shieldCheck.checked = false; 
-            shieldWrap.classList.add('disabled');
+            unarmoredWrap.style.display = 'none';
         }
+
+        checkShieldState(); // 统一交由 checkShieldState 处理盾牌联动
         autoUpdate();
     }
 
-    /* ==== 种族与塔莎规则逻辑 ==== */
     function updateRaceUI() {
         const race = document.getElementById('raceSelect').value;
         const useTasha = document.getElementById('tashaRules').checked;
@@ -622,19 +705,14 @@
         const tashaBox = document.getElementById('tashaBonuses');
         const raceDesc = document.getElementById('raceDesc');
 
-        // 更新文案
         if (useTasha) {
-            raceDesc.innerHTML = "你已开启<b>塔莎自选属性规则</b>。原种族属性加成已被禁用，请在下方自由分配种族提供的点数。";
-            
-            // 隐藏半精灵特有面板，显示塔莎动态面板
+            raceDesc.innerHTML = "已开启<b>自选属性规则</b>。原固定种族属性加成已转换为下方可分配点数。";
             heBox.style.display = 'none';
             tashaBox.style.display = 'block';
-            
             buildTashaSelects(race);
         } else {
-            raceDesc.innerText = "种族将为你提供独特的天生特质与核心属性加成（依据 D&D 5E 2014 规则）。";
+            raceDesc.innerText = "种族将提供独特的天生特质与属性加成。";
             tashaBox.style.display = 'none';
-            
             if (race === 'halfelf') {
                 heBox.style.display = 'block';
                 updateHalfElfOptions();
@@ -645,21 +723,20 @@
         autoUpdate();
     }
 
-    // 动态生成塔莎规则下的选择框
     function buildTashaSelects(race) {
         const pointsArray = tashaPointsMap[race];
         const container = document.getElementById('tashaDynamicSelects');
         const descEl = document.getElementById('tashaPointsDesc');
         
-        let descText = pointsArray.map(p => `一项 +${p}`).join(" 和 ");
-        if (race === 'human') descText = "六项核心属性各 +1"; // 人类特殊描述
+        let descText = pointsArray.map(p => `+${p}`).join(" / ");
+        if (race === 'human') descText = "六项核心属性各 +1";
         descEl.innerText = descText;
 
         let html = '';
         if (race === 'human') {
-            html = `<p style="color:#86868b; font-size:14px; margin:0;">普通人类为全属性 +1，无需选择（规则不支持重复叠加）。</p>`;
+            html = `<p style="color:#86868b; font-size:13px; margin:0;">人类为全属性 +1，无需手动配置（不可叠加项）。</p>`;
         } else {
-            html += `<div class="form-row" style="margin-bottom:0;">`;
+            html += `<div class="form-row" style="margin-bottom:0; gap:10px;">`;
             pointsArray.forEach((point, index) => {
                 html += `
                 <div class="form-group">
@@ -676,12 +753,9 @@
             html += `</div>`;
         }
         container.innerHTML = html;
-        
-        // 生成完毕后强制校验一次互斥
         if(race !== 'human') handleTashaMutualExclusion();
     }
 
-    // 处理塔莎下拉框的互斥（同一属性不能加两次）
     function handleTashaMutualExclusion() {
         if (isUpdatingTasha) return;
         isUpdatingTasha = true;
@@ -695,14 +769,12 @@
             selects.push(document.getElementById(`tashaSelect_${i}`));
         }
 
-        // 1. 发现冲突时自动移开焦点选项
         for(let i=0; i<selects.length; i++) {
             for(let j=i+1; j<selects.length; j++) {
                 if(selects[i].value === selects[j].value) {
                     const options = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
                     const used = selects.map(s => s.value);
                     const availableOpt = options.find(o => !used.includes(o));
-                    
                     if (document.activeElement === selects[i]) {
                         selects[j].value = availableOpt;
                     } else {
@@ -712,11 +784,9 @@
             }
         }
 
-        // 2. 锁定其他框已选的值
         const currentVals = selects.map(s => s.value);
         selects.forEach(currentSel => {
             Array.from(currentSel.options).forEach(opt => {
-                // 如果这个 option 的值被其他 select 占用了，则 disable
                 opt.disabled = currentVals.includes(opt.value) && opt.value !== currentSel.value;
             });
         });
@@ -747,13 +817,88 @@
         autoUpdate();
     }
 
-    /* ==== 拖拽与自定义逻辑 ==== */
+    /* ==== 拖拽与移动端触控逻辑 ==== */
+    let dragSrcEl = null;
+
+    // --- HTML5 Drag/Drop (PC端) ---
+    function drag(ev) {
+        if (isCustomizing) return;
+        ev.dataTransfer.setData("sourceStat", ev.currentTarget.dataset.stat);
+        ev.currentTarget.classList.add('dragging');
+    }
+    function dragEnd(ev) { ev.currentTarget.classList.remove('dragging'); }
+    function allowDrop(ev) { if (!isCustomizing) ev.preventDefault(); }
+    function dragEnter(ev) {
+        if (isCustomizing) return;
+        ev.preventDefault();
+        ev.currentTarget.classList.add('drag-over');
+    }
+    function dragLeave(ev) { ev.currentTarget.classList.remove('drag-over'); }
+    function drop(ev) {
+        if (isCustomizing) return;
+        ev.preventDefault();
+        ev.currentTarget.classList.remove('drag-over');
+        
+        const sourceStat = ev.dataTransfer.getData("sourceStat");
+        const targetStat = ev.currentTarget.dataset.stat; 
+        
+        if (sourceStat && targetStat && sourceStat !== targetStat) {
+            const sourceDiv = document.getElementById('val_' + sourceStat);
+            const targetDiv = document.getElementById('val_' + targetStat);
+            const temp = sourceDiv.innerText;
+            sourceDiv.innerText = targetDiv.innerText;
+            targetDiv.innerText = temp;
+            autoUpdate(); 
+        }
+    }
+
+    // --- Touch Events (移动端) ---
+    function handleTouchStart(e) {
+        if (isCustomizing) return;
+        dragSrcEl = e.currentTarget;
+        dragSrcEl.classList.add('dragging');
+        document.body.style.overflow = 'hidden'; // 防止移动端页面跟随手指滚动
+    }
+
+    function handleTouchMove(e) {
+        if (isCustomizing || !dragSrcEl) return;
+        e.preventDefault(); 
+        const touch = e.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        document.querySelectorAll('.stat-value').forEach(el => el.classList.remove('drag-over'));
+        
+        if (target && target.classList.contains('stat-value') && target !== dragSrcEl) {
+            target.classList.add('drag-over');
+        }
+    }
+
+    function handleTouchEnd(e) {
+        if (isCustomizing || !dragSrcEl) return;
+        dragSrcEl.classList.remove('dragging');
+        document.body.style.overflow = ''; // 恢复滚动
+        
+        const touch = e.changedTouches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        document.querySelectorAll('.stat-value').forEach(el => el.classList.remove('drag-over'));
+        
+        if (target && target.classList.contains('stat-value') && target !== dragSrcEl) {
+            const temp = dragSrcEl.innerText;
+            dragSrcEl.innerText = target.innerText;
+            target.innerText = temp;
+            autoUpdate();
+        }
+        dragSrcEl = null;
+    }
+
+    // 切换自定义模式
     function toggleCustomize() {
         isCustomizing = !isCustomizing;
         const btn = document.getElementById('btn-custom');
         
         if (isCustomizing) {
-            btn.innerHTML = "✅ 完成修改";
+            btn.innerHTML = "✅ 完成";
             btn.classList.add('active');
             STATS_KEYS.forEach(stat => {
                 const valueEl = document.querySelector(`.stat-value[data-stat="${stat}"]`);
@@ -779,44 +924,6 @@
         }
     }
 
-    function drag(ev) {
-        if (isCustomizing) return;
-        ev.dataTransfer.setData("sourceStat", ev.currentTarget.dataset.stat);
-        ev.currentTarget.classList.add('dragging');
-    }
-    function dragEnd(ev) {
-        ev.currentTarget.classList.remove('dragging');
-    }
-    function allowDrop(ev) {
-        if (isCustomizing) return;
-        ev.preventDefault(); 
-    }
-    function dragEnter(ev) {
-        if (isCustomizing) return;
-        ev.preventDefault();
-        ev.currentTarget.classList.add('drag-over');
-    }
-    function dragLeave(ev) {
-        ev.currentTarget.classList.remove('drag-over');
-    }
-    function drop(ev) {
-        if (isCustomizing) return;
-        ev.preventDefault();
-        ev.currentTarget.classList.remove('drag-over');
-        
-        const sourceStat = ev.dataTransfer.getData("sourceStat");
-        const targetStat = ev.currentTarget.dataset.stat; 
-        
-        if (sourceStat && targetStat && sourceStat !== targetStat) {
-            const sourceDiv = document.getElementById('val_' + sourceStat);
-            const targetDiv = document.getElementById('val_' + targetStat);
-            const temp = sourceDiv.innerText;
-            sourceDiv.innerText = targetDiv.innerText;
-            targetDiv.innerText = temp;
-            autoUpdate(); 
-        }
-    }
-
     function getStatValue(stat) {
         const valDiv = document.getElementById('val_' + stat);
         if (isCustomizing) {
@@ -827,7 +934,6 @@
         }
     }
 
-    /* ==== 核心计算逻辑 ==== */
     function roll4d6DropLowest() {
         let rolls = [Math.ceil(Math.random()*6), Math.ceil(Math.random()*6), Math.ceil(Math.random()*6), Math.ceil(Math.random()*6)];
         rolls.sort((a, b) => b - a);
@@ -850,7 +956,7 @@
     function formatMod(mod) { return mod >= 0 ? "+" + mod : mod; }
 
     function generateResults() {
-        const name = document.getElementById('charName').value.trim() || "无名冒险者";
+        const name = document.getElementById('charName').value.trim() || "未命名冒险者";
         const level = parseInt(document.getElementById('charLevel').value) || 1;
         const gender = document.getElementById('charGender').value;
         const clsKey = document.getElementById('classSelect').value;
@@ -867,11 +973,8 @@
         const pb = Math.ceil(level / 4) + 1;
         document.getElementById('res_pb').innerText = "+" + pb;
 
-        // --- 计算种族加成 (包含塔莎规则分支) ---
         let currentBonus = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
-        
         if (useTasha) {
-            // 塔莎自选加成逻辑
             if (raceKey === 'human') {
                 currentBonus = { str: 1, dex: 1, con: 1, int: 1, wis: 1, cha: 1 };
             } else {
@@ -882,7 +985,6 @@
                 }
             }
         } else {
-            // 原版规则加成逻辑
             currentBonus = { ...raceBonuses[raceKey] }; 
             if (raceKey === 'halfelf') {
                 const attr1 = document.getElementById('halfElfAttr1').value;
@@ -909,20 +1011,20 @@
 
             let isProfSave = saveProfs.includes(stat);
             let saveMod = mod + (isProfSave ? pb : 0);
-            let profStar = isProfSave ? "<span style='color:#f39c12; margin-left:6px; font-size:14px;' title='熟练项'>★</span>" : "";
+            let profStar = isProfSave ? "<span style='color:#f39c12; margin-left:4px; font-size:12px;' title='熟练项'>★</span>" : "";
             
-            let sourceTag = useTasha ? "塔莎自选" : "种族";
+            let sourceTag = useTasha ? "自选" : "种族";
             let detailText = currentBonus[stat] > 0 
-                ? `基础 ${baseVal} <span style="color:#0071e3; font-weight:500;">(+${currentBonus[stat]} ${sourceTag})</span>` 
-                : `基础 ${baseVal}`;
+                ? `基数 ${baseVal} (+${currentBonus[stat]}${sourceTag})` 
+                : `基数 ${baseVal}`;
 
             htmlContent += `
                 <div class="attr-card">
                     <div class="attr-card-left">
-                        <div class="attr-card-name">${statNames[stat]} ${stat.toUpperCase()}</div>
+                        <div class="attr-card-name">${statNames[stat]} (${stat.toUpperCase()})</div>
                         <div class="attr-card-detail">
-                            总和 <b style="color:#1d1d1f;">${finalVal}</b> <span style="margin:0 6px; color:#d2d2d7">|</span> ${detailText}<br>
-                            <span style="color:#1d1d1f; font-weight: 500;">豁免加值: ${formatMod(saveMod)}</span> ${profStar}
+                            ${detailText}<br>
+                            豁免: <b>${formatMod(saveMod)}</b> ${profStar}
                         </div>
                     </div>
                     <div class="attr-card-mod">${formatMod(mod)}</div>
@@ -931,26 +1033,23 @@
         htmlContent += `</div>`;
         document.getElementById('res_stats_container').innerHTML = htmlContent;
 
-        // --- 技能结果计算 ---
         let skillsHtml = '';
         const bgSkills = backgroundSkills[bgKey] || [];
         
         skillList.forEach(s => {
             const isProf = bgSkills.includes(s.id) || userSelectedClassSkills.has(s.id);
             const skillMod = finalStatsMod[s.stat] + (isProf ? pb : 0);
-            
             const profDotClass = isProf ? "prof-dot active" : "prof-dot inactive";
             const profDotIcon = isProf ? "●" : "○";
 
             skillsHtml += `
             <div class="skill-res-item">
-                <div class="skill-res-name"><span class="${profDotClass}">${profDotIcon}</span> ${s.name} <span style="color:#86868b; font-size:12px; margin-left:4px;">(${s.stat.toUpperCase()})</span></div>
+                <div class="skill-res-name"><span class="${profDotClass}">${profDotIcon}</span> ${s.name} <span style="color:#86868b; font-size:11px;">(${s.stat.toUpperCase()})</span></div>
                 <div class="skill-res-mod">${formatMod(skillMod)}</div>
             </div>`;
         });
         document.getElementById('res_skills_container').innerHTML = skillsHtml;
 
-        // --- HP 计算 ---
         const maxHd = classBaseHp[clsKey];
         const avgHd = Math.floor(maxHd / 2) + 1; 
         let hpGainPerLevel = avgHd + finalConMod;
@@ -963,19 +1062,18 @@
         // --- AC 计算 ---
         let baseAc = 10;
         let armorMaxDex = 99; 
+        let extraAcBonus = 0;
         
         switch(armorKey) {
             case 'none': baseAc = 10; armorMaxDex = 99; break;
             case 'padded': baseAc = 11; armorMaxDex = 99; break;
             case 'leather': baseAc = 11; armorMaxDex = 99; break;
             case 'studded': baseAc = 12; armorMaxDex = 99; break;
-            
             case 'hide': baseAc = 12; armorMaxDex = 2; break;
             case 'chainshirt': baseAc = 13; armorMaxDex = 2; break;
             case 'scale': baseAc = 14; armorMaxDex = 2; break;
             case 'breastplate': baseAc = 14; armorMaxDex = 2; break;
             case 'halfplate': baseAc = 15; armorMaxDex = 2; break;
-            
             case 'ring': baseAc = 14; armorMaxDex = 0; break;
             case 'chain': baseAc = 16; armorMaxDex = 0; break;
             case 'splint': baseAc = 17; armorMaxDex = 0; break;
@@ -984,11 +1082,28 @@
 
         let actualDexBonus = finalDexMod;
 
+        // 无甲或护甲 AC 逻辑判定
         if (armorKey === 'none') {
-            if (clsKey === 'barbarian') {
-                actualDexBonus = finalDexMod + finalConMod;
-            } else if (clsKey === 'monk' && !hasShield) {
-                actualDexBonus = finalDexMod + finalWisMod;
+            const unarmoredType = document.getElementById('unarmoredSelect').value;
+            
+            if (unarmoredType === 'mage_armor') {
+                baseAc = 13;
+                actualDexBonus = finalDexMod;
+            } else if (unarmoredType === 'barbarian') {
+                baseAc = 10;
+                actualDexBonus = finalDexMod;
+                extraAcBonus = finalConMod;
+            } else if (unarmoredType === 'monk') {
+                baseAc = 10;
+                actualDexBonus = finalDexMod;
+                // 武僧无甲防御判定：不能拿盾牌。尽管前面的 checkShieldState 会把界面按钮置灰置0，
+                // 这里的二次校验确保无论何种极端情况，都不会出现持盾同时享受感知加成的计算漏洞。
+                if (!hasShield) {
+                    extraAcBonus = finalWisMod;
+                }
+            } else {
+                baseAc = 10;
+                actualDexBonus = finalDexMod;
             }
         } else {
             if (armorMaxDex === 0) {
@@ -998,7 +1113,7 @@
             }
         }
 
-        let finalAc = baseAc + actualDexBonus + (hasShield ? 2 : 0);
+        let finalAc = baseAc + actualDexBonus + extraAcBonus + (hasShield ? 2 : 0);
         document.getElementById('res_ac').innerText = finalAc;
     }
 </script>
