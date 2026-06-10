@@ -287,6 +287,15 @@
                 </select>
             </div>
         </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>主要武器 (自动判定熟练项并计算攻击/伤害)</label>
+                <select id="weaponSelect" onchange="autoUpdate()">
+                    </select>
+                <p style="font-size: 12px; color: #86868b; margin: 6px 0 0 0;">武僧或持有灵巧(Finesse)武器时，将自动取力敏最高值。</p>
+            </div>
+        </div>
 
         <div class="btn-wrapper" id="wrap-btn1">
             <button class="btn-continue" onclick="reveal(2)">继续选择种族</button>
@@ -413,6 +422,11 @@
         </div>
 
         <div class="attr-result">
+            <h3>战斗与法术 (Combat & Magic)</h3>
+            <div class="attr-grid" id="res_combat_container"></div>
+        </div>
+
+        <div class="attr-result">
             <h3>综合属性与豁免</h3>
             <div id="res_stats_container"></div>
             <p style="font-size: 11px; color: #86868b; margin-top: 12px; margin-bottom: 0;">
@@ -439,6 +453,72 @@
 
     const classBaseHp = { barbarian: 12, fighter: 10, paladin: 10, ranger: 10, bard: 8, cleric: 8, druid: 8, monk: 8, rogue: 8, warlock: 8, sorcerer: 6, wizard: 6 };
     const classSaves = { barbarian: ["str", "con"], fighter: ["str", "con"], paladin: ["wis", "cha"], ranger: ["str", "dex"], bard: ["dex", "cha"], cleric: ["wis", "cha"], druid: ["int", "wis"], monk: ["str", "dex"], rogue: ["dex", "int"], warlock: ["wis", "cha"], sorcerer: ["con", "cha"], wizard: ["int", "wis"] };
+
+    const weaponData = {
+    unarmed: { name: "徒手打击 (Unarmed)", dice: "1 钝击", attr: "str", category: "simple" },
+    
+    // --- 简易近战武器 (Simple Melee) ---
+    club: { name: "木棍 (Club)", dice: "1d4 钝击", attr: "str", category: "simple" },
+    dagger: { name: "匕首 (Dagger)", dice: "1d4 穿刺", attr: "finesse", category: "simple" },
+    greatclub: { name: "巨木棍 (Greatclub)", dice: "1d8 钝击", attr: "str", category: "simple" },
+    handaxe: { name: "手斧 (Handaxe)", dice: "1d6 挥砍", attr: "str", category: "simple" },
+    javelin: { name: "标枪 (Javelin)", dice: "1d6 穿刺", attr: "str", category: "simple" },
+    light_hammer: { name: "轻锤 (Light Hammer)", dice: "1d4 钝击", attr: "str", category: "simple" },
+    mace: { name: "硬头锤 (Mace)", dice: "1d6 钝击", attr: "str", category: "simple" },
+    quarterstaff: { name: "长棍 (Quarterstaff)", dice: "1d6 钝击", attr: "str", category: "simple" },
+    sickle: { name: "镰刀 (Sickle)", dice: "1d4 挥砍", attr: "str", category: "simple" },
+    spear: { name: "矛 (Spear)", dice: "1d6 穿刺", attr: "str", category: "simple" },
+
+    // --- 简易远程武器 (Simple Ranged) ---
+    light_crossbow: { name: "轻弩 (Light Crossbow)", dice: "1d8 穿刺", attr: "dex", category: "simple" },
+    dart: { name: "飞镖 (Dart)", dice: "1d4 穿刺", attr: "finesse", category: "simple" },
+    shortbow: { name: "短弓 (Shortbow)", dice: "1d6 穿刺", attr: "dex", category: "simple" },
+    sling: { name: "投石索 (Sling)", dice: "1d4 钝击", attr: "dex", category: "simple" },
+
+    // --- 军用近战武器 (Martial Melee) ---
+    battleaxe: { name: "战斧 (Battleaxe)", dice: "1d8 挥砍", attr: "str", category: "martial" },
+    flail: { name: "连枷 (Flail)", dice: "1d8 钝击", attr: "str", category: "martial" },
+    glaive: { name: "长柄刀 (Glaive)", dice: "1d10 挥砍", attr: "str", category: "martial" },
+    greataxe: { name: "巨斧 (Greataxe)", dice: "1d12 挥砍", attr: "str", category: "martial" },
+    greatsword: { name: "巨剑 (Greatsword)", dice: "2d6 挥砍", attr: "str", category: "martial" },
+    halberd: { name: "戟 (Halberd)", dice: "1d10 挥砍", attr: "str", category: "martial" },
+    lance: { name: "骑枪 (Lance)", dice: "1d12 穿刺", attr: "str", category: "martial" },
+    longsword: { name: "长剑 (Longsword)", dice: "1d8 挥砍", attr: "str", category: "martial" },
+    maul: { name: "巨锤 (Maul)", dice: "2d6 钝击", attr: "str", category: "martial" },
+    morningstar: { name: "晨星锤 (Morningstar)", dice: "1d8 穿刺", attr: "str", category: "martial" },
+    pike: { name: "长枪 (Pike)", dice: "1d10 穿刺", attr: "str", category: "martial" },
+    rapier: { name: "刺剑 (Rapier)", dice: "1d8 穿刺", attr: "finesse", category: "martial" },
+    scimitar: { name: "弯刀 (Scimitar)", dice: "1d6 挥砍", attr: "finesse", category: "martial" },
+    shortsword: { name: "短剑 (Shortsword)", dice: "1d6 穿刺", attr: "finesse", category: "martial" },
+    trident: { name: "三叉戟 (Trident)", dice: "1d6 穿刺", attr: "str", category: "martial" },
+    war_pick: { name: "战镐 (War Pick)", dice: "1d8 穿刺", attr: "str", category: "martial" },
+    warhammer: { name: "战锤 (Warhammer)", dice: "1d8 钝击", attr: "str", category: "martial" },
+    whip: { name: "长鞭 (Whip)", dice: "1d4 挥砍", attr: "finesse", category: "martial" },
+
+    // --- 军用远程武器 (Martial Ranged) ---
+    blowgun: { name: "吹箭筒 (Blowgun)", dice: "1 穿刺", attr: "dex", category: "martial" },
+    hand_crossbow: { name: "手弩 (Hand Crossbow)", dice: "1d6 穿刺", attr: "dex", category: "martial" },
+    heavy_crossbow: { name: "重弩 (Heavy Crossbow)", dice: "1d10 穿刺", attr: "dex", category: "martial" },
+    longbow: { name: "长弓 (Longbow)", dice: "1d8 穿刺", attr: "dex", category: "martial" },
+    net: { name: "网 (Net)", dice: "无伤害", attr: "dex", category: "martial" }
+};
+
+    const classWeaponsProf = {
+    fighter: ['simple', 'martial'], barbarian: ['simple', 'martial'], paladin: ['simple', 'martial'], ranger: ['simple', 'martial'],
+    bard: ['simple', 'hand_crossbow', 'longsword', 'rapier', 'shortsword'], 
+    rogue: ['simple', 'hand_crossbow', 'longsword', 'rapier', 'shortsword'],
+    cleric: ['simple'], monk: ['simple', 'shortsword'], warlock: ['simple'],
+    // 德鲁伊、术士、法师的特定熟练项已根据 PHB 对齐上面的 key
+    druid: ['club', 'dagger', 'dart', 'javelin', 'mace', 'quarterstaff', 'scimitar', 'sickle', 'sling', 'spear'], 
+    sorcerer: ['dagger', 'dart', 'sling', 'quarterstaff', 'light_crossbow'], 
+    wizard: ['dagger', 'dart', 'sling', 'quarterstaff', 'light_crossbow']
+};
+
+    // --- 新增：施法核心属性映射 ---
+    const spellcastingAbility = {
+        bard: "cha", cleric: "wis", druid: "wis", paladin: "cha", ranger: "wis", sorcerer: "cha", warlock: "cha", wizard: "int",
+        fighter: "int", rogue: "int" // 战士和游荡者以防选奥法骑士/诡术师，默认判定为智力
+    };
 
     const classArmorProf = {
         fighter: ['none', 'light', 'medium', 'heavy', 'shield'], paladin: ['none', 'light', 'medium', 'heavy', 'shield'],
@@ -500,11 +580,36 @@
     const STATS_KEYS = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
     window.onload = function() {
+        updateWeaponOptions();
         updateArmorOptions();
         buildSkillsDOM();
         updateASIUI();
         updateSkillsUI();
     };
+
+    // --- 新增：更新武器下拉框并标注熟练项 ---
+    function updateWeaponOptions() {
+        const clsKey = document.getElementById('classSelect').value;
+        const profs = classWeaponsProf[clsKey] || [];
+        const weaponSelect = document.getElementById('weaponSelect');
+        const currentVal = weaponSelect.value;
+        
+        let html = '';
+        for (let [id, w] of Object.entries(weaponData)) {
+            // 如果职业精通全类别（比如 simple 简易武器），或者直接点名精通某把武器
+            let isProf = profs.includes(w.category) || profs.includes(id);
+            let profText = isProf ? "" : " (无熟练)";
+            html += `<option value="${id}">${w.name}${profText}</option>`;
+        }
+        weaponSelect.innerHTML = html;
+        
+        // 尝试保留之前的选择，如果选项还存在的话
+        if (Array.from(weaponSelect.options).some(o => o.value === currentVal)) {
+            weaponSelect.value = currentVal;
+        } else {
+            weaponSelect.selectedIndex = 0;
+        }
+    }
 
     function buildSkillsDOM() {
         const container = document.getElementById('skillsContainer');
@@ -571,9 +676,9 @@
         updateASIUI();
         updateSkillsUI();
         updateArmorOptions(); 
+        updateWeaponOptions(); // 更新武器熟练项
     }
 
-    // --- ASI 计算与校验 ---
     function updateASIUI() {
         const level = parseInt(document.getElementById('charLevel').value) || 1;
         const clsKey = document.getElementById('classSelect').value;
@@ -604,8 +709,6 @@
 
     function validateASI() {
         let used = 0;
-        
-        // 第一次遍历：清理负数输入，并计算当前加点总和
         STATS_KEYS.forEach(stat => {
             let el = document.getElementById(`asi_in_${stat}`);
             let val = parseInt(el.value) || 0;
@@ -613,18 +716,14 @@
             used += val;
         });
 
-        // 核心卡控：如果总和超出了允许的最大点数，强制截断
         if (used > totalASIPoints) {
             let excess = used - totalASIPoints;
             let activeEl = document.activeElement;
             
-            // 场景 A：玩家正在点击箭头或输入数字导致的溢出，精准扣除当前输入框的多余值
             if (activeEl && activeEl.tagName === 'INPUT' && activeEl.id.startsWith('asi_in_')) {
                 let currentVal = parseInt(activeEl.value) || 0;
                 activeEl.value = Math.max(0, currentVal - excess);
-            } 
-            // 场景 B：玩家下调了角色等级导致总 ASI 点数减少，自动从下往上（魅力->力量）扣除溢出点数
-            else {
+            } else {
                 STATS_KEYS.slice().reverse().forEach(stat => {
                     if (excess <= 0) return;
                     let el = document.getElementById(`asi_in_${stat}`);
@@ -636,15 +735,12 @@
                     }
                 });
             }
-            used = totalASIPoints; // 强制截断后，已用点数必定等于最大点数
+            used = totalASIPoints;
         }
 
-        // 更新 UI 显示
         const left = totalASIPoints - used;
         const leftEl = document.getElementById('asiPointsLeft');
         leftEl.innerText = left;
-        
-        // 因为已经锁死了上限，不会再有负数，所以去掉了之前的红色警告色
         leftEl.style.color = left === 0 ? '#34c759' : '#0071e3'; 
     }
 
@@ -654,7 +750,6 @@
         const bgSkills = backgroundSkills[bgKey] || [];
         const clsRule = classSkillRules[clsKey] || { count: 2, list: [] };
         
-        // 熟练项重叠替换规则开关
         const allowFree = document.getElementById('freeSkillCheck').checked;
         const currentAllowedList = allowFree ? skillList.map(s => s.id) : clsRule.list;
 
@@ -1141,6 +1236,69 @@
         htmlContent += `</div>`;
         document.getElementById('res_stats_container').innerHTML = htmlContent;
 
+        // --- 新增：物理攻击与法术 DC 结算 ---
+        const weaponKey = document.getElementById('weaponSelect').value;
+        const weapon = weaponData[weaponKey];
+        const weaponProfs = classWeaponsProf[clsKey] || [];
+        const isWeaponProf = weaponProfs.includes(weapon.category) || weaponProfs.includes(weaponKey);
+        
+        let atkAttrMod = 0;
+        let atkAttrStr = "";
+        
+        // 灵巧判定或武僧专属（武僧使用简易武器/短剑时可取敏捷）
+        if (weapon.attr === 'finesse' || (clsKey === 'monk' && (weapon.category === 'simple' || weaponKey === 'shortsword'))) {
+            if (finalStatsMod.dex > finalStatsMod.str) {
+                atkAttrMod = finalStatsMod.dex;
+                atkAttrStr = "敏捷";
+            } else {
+                atkAttrMod = finalStatsMod.str;
+                atkAttrStr = "力量";
+            }
+        } else if (weapon.attr === 'dex') {
+            atkAttrMod = finalStatsMod.dex;
+            atkAttrStr = "敏捷";
+        } else {
+            atkAttrMod = finalStatsMod.str;
+            atkAttrStr = "力量";
+        }
+        
+        const atkBonus = atkAttrMod + (isWeaponProf ? pb : 0);
+        const dmgBonus = atkAttrMod;
+
+        let spellHtml = '';
+        if (clsKey === 'barbarian' || clsKey === 'monk') {
+            spellHtml = `<div class="attr-card-detail" style="margin-top:2px;">无通常施法能力</div>`;
+        } else {
+            const spellAttr = spellcastingAbility[clsKey];
+            const spellAttrMod = finalStatsMod[spellAttr];
+            const spellDc = 8 + pb + spellAttrMod;
+            const spellAtk = pb + spellAttrMod;
+            spellHtml = `
+                <div class="attr-card-name">法术豁免 DC: <span style="color:#e74c3c; font-size:18px; margin-left:8px;">${spellDc}</span></div>
+                <div class="attr-card-detail">基于 ${statNames[spellAttr]} (${spellAttr.toUpperCase()}) | 法术攻击: <b>${formatMod(spellAtk)}</b></div>
+            `;
+        }
+
+        const combatHtml = `
+            <div class="attr-card">
+                <div class="attr-card-left">
+                    <div class="attr-card-name">近战/远程: ${weapon.name}</div>
+                    <div class="attr-card-detail">
+                        命中: <b>${formatMod(atkBonus)}</b> (基于${atkAttrStr} ${isWeaponProf?"+ 熟练项":""})<br>
+                        伤害: <b>${weapon.dice} ${formatMod(dmgBonus)}</b>
+                    </div>
+                </div>
+                <div class="attr-card-mod" style="background: rgba(231,76,60,0.06); color: #e74c3c;">${formatMod(atkBonus)}</div>
+            </div>
+            <div class="attr-card">
+                <div class="attr-card-left" style="width:100%; justify-content: center;">
+                    ${spellHtml}
+                </div>
+            </div>
+        `;
+        document.getElementById('res_combat_container').innerHTML = combatHtml;
+
+
         let skillsHtml = '';
         const bgSkills = backgroundSkills[bgKey] || [];
         
@@ -1189,7 +1347,7 @@
             case 'plate': baseAc = 18; armorMaxDex = 0; break;
         }
 
-        let actualDexBonus = finalDexMod;
+        let actualDexBonus = finalStatsMod.dex;
 
         // 无甲或护甲 AC 逻辑判定
         if (!isWearingArmor) {
@@ -1207,7 +1365,7 @@
             }
         } else {
             if (armorMaxDex === 0) { actualDexBonus = 0; } 
-            else { actualDexBonus = Math.min(finalDexMod, armorMaxDex); }
+            else { actualDexBonus = Math.min(finalStatsMod.dex, armorMaxDex); }
         }
 
         // 防御战斗风格判定：仅在穿戴护甲时生效
