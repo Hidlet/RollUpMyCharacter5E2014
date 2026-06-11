@@ -118,6 +118,19 @@
         .prof-dot { margin-right: 6px; font-size: 11px; }
         .prof-dot.active { color: #f39c12; }
         .prof-dot.inactive { color: #d2d2d7; }
+		
+		/* 属性购点弹窗样式 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-box { background: #fff; border-radius: 18px; padding: 28px; width: 90%; max-width: 400px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); box-sizing: border-box; transform: translateY(20px) scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+        .pb-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: #f5f5f7; padding: 8px 14px; border-radius: 12px; }
+        .pb-label { font-size: 14px; font-weight: 600; }
+        .pb-controls { display: flex; align-items: center; gap: 12px; }
+        .btn-stepper { border: none; background: #e8e8ed; color: #1d1d1f; width: 28px; height: 28px; border-radius: 50%; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; user-select: none; }
+        .btn-stepper:hover { background: #d2d2d7; }
+        .btn-stepper:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pb-value { font-size: 16px; font-weight: 600; width: 24px; text-align: center; }
 
         /* ================= 移动端适配响应式媒体查询 ================= */
         @media (max-width: 600px) {
@@ -362,6 +375,7 @@
         
         <div class="action-row">
             <button class="btn-roll" onclick="rollStatPool()">🎲 4d6 掷点生成</button>
+            <button class="btn-custom" onclick="openPointBuyModal()">📊 属性购点</button>
             <button id="btn-custom" class="btn-custom" onclick="toggleCustomize()">✏️ 自定义</button>
         </div>
 
@@ -587,23 +601,39 @@
         updateSkillsUI();
     };
 
-    // --- 新增：更新武器下拉框并标注熟练项 ---
     function updateWeaponOptions() {
         const clsKey = document.getElementById('classSelect').value;
         const profs = classWeaponsProf[clsKey] || [];
         const weaponSelect = document.getElementById('weaponSelect');
         const currentVal = weaponSelect.value;
         
+        // 定义分组与包含的武器 ID
+        const weaponGroups = {
+            "简易近战武器 (Simple Melee)": ["unarmed", "club", "dagger", "greatclub", "handaxe", "javelin", "light_hammer", "mace", "quarterstaff", "sickle", "spear"],
+            "简易远程武器 (Simple Ranged)": ["light_crossbow", "dart", "shortbow", "sling"],
+            "军用近战武器 (Martial Melee)": ["battleaxe", "flail", "glaive", "greataxe", "greatsword", "halberd", "lance", "longsword", "maul", "morningstar", "pike", "rapier", "scimitar", "shortsword", "trident", "war_pick", "warhammer", "whip"],
+            "军用远程武器 (Martial Ranged)": ["blowgun", "hand_crossbow", "heavy_crossbow", "longbow", "net"]
+        };
+
         let html = '';
-        for (let [id, w] of Object.entries(weaponData)) {
-            // 如果职业精通全类别（比如 simple 简易武器），或者直接点名精通某把武器
-            let isProf = profs.includes(w.category) || profs.includes(id);
-            let profText = isProf ? "" : " (无熟练)";
-            html += `<option value="${id}">${w.name}${profText}</option>`;
+        for (let [groupName, keys] of Object.entries(weaponGroups)) {
+            html += `<optgroup label="${groupName}">`;
+            for (let id of keys) {
+                if (!weaponData[id]) continue; // 容错校验
+                let w = weaponData[id];
+                let isProf = profs.includes(w.category) || profs.includes(id);
+                let profText = isProf ? "" : " (无熟练)";
+                
+                // 不使用 disabled，利用内联 style 将字放置灰，保持选项可点击
+                let styleStr = isProf ? "" : 'style="color: #a1a1a6;"'; 
+                
+                html += `<option value="${id}" ${styleStr}>${w.name}${profText}</option>`;
+            }
+            html += `</optgroup>`;
         }
         weaponSelect.innerHTML = html;
         
-        // 尝试保留之前的选择，如果选项还存在的话
+        // 尝试保留切换职业前选中的武器
         if (Array.from(weaponSelect.options).some(o => o.value === currentVal)) {
             weaponSelect.value = currentVal;
         } else {
@@ -1376,7 +1406,111 @@
         let finalAc = baseAc + actualDexBonus + extraAcBonus + (hasShield ? 2 : 0);
         document.getElementById('res_ac').innerText = finalAc;
     }
+	
+	// --- 属性购点核心逻辑 ---
+    // 5E 经典购点开销表：8-15点标准开销，16-18点为高强度规则扩展开销
+    const pbCostTable = { 8:0, 9:1, 10:2, 11:3, 12:4, 13:5, 14:7, 15:9, 16:12, 17:15, 18:19 };
+    let pbCurrentStats = { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 };
+
+    function openPointBuyModal() {
+        if (isCustomizing) toggleCustomize(); // 如果正处于微调自定义状态，先关闭它
+        document.getElementById('pointBuyModal').classList.add('active');
+        initPointBuy();
+    }
+
+    function closePointBuyModal() {
+        document.getElementById('pointBuyModal').classList.remove('active');
+    }
+
+    function initPointBuy() {
+        const type = document.getElementById('pbTypeSelect').value;
+        document.getElementById('pbTotalPoints').innerText = type;
+        
+        // 每次切换或打开时，默认将所有基础属性重置为 8
+        STATS_KEYS.forEach(stat => pbCurrentStats[stat] = 8);
+        renderPointBuyRows();
+    }
+
+    function renderPointBuyRows() {
+        const type = document.getElementById('pbTypeSelect').value;
+        const maxScore = type === "27" ? 15 : 18; // 27点时封顶15，32点时封顶18
+        
+        // 计算当前已消耗的总点数
+        let currentUsed = 0;
+        STATS_KEYS.forEach(stat => {
+            currentUsed += pbCostTable[pbCurrentStats[stat]];
+        });
+        
+        const totalBudget = parseInt(type);
+        const pointsLeft = totalBudget - currentUsed;
+        
+        const leftEl = document.getElementById('pbPointsLeft');
+        leftEl.innerText = pointsLeft;
+        leftEl.style.color = pointsLeft < 0 ? '#e74c3c' : (pointsLeft === 0 ? '#34c759' : '#0071e3');
+
+        let html = '';
+        STATS_KEYS.forEach(stat => {
+            const currentVal = pbCurrentStats[stat];
+            
+            // 判定加减按钮的可用性
+            const canMinus = currentVal > 8;
+            // 判定增加按钮：不能超过规则上限，且升档所需的点数不能超过剩余点数
+            const nextCost = pbCostTable[currentVal + 1] - pbCostTable[currentVal];
+            const canPlus = currentVal < maxScore && pointsLeft >= nextCost;
+
+            html += `
+            <div class="pb-row">
+                <span class="pb-label">${statNames[stat]} (${stat.toUpperCase()})</span>
+                <div class="pb-controls">
+                    <button class="btn-stepper" ${canMinus ? '' : 'disabled'} onclick="adjustPbStat('${stat}', -1)">-</button>
+                    <span class="pb-value">${currentVal}</span>
+                    <button class="btn-stepper" ${canPlus ? '' : 'disabled'} onclick="adjustPbStat('${stat}', 1)">+</button>
+                </div>
+            </div>`;
+        });
+        document.getElementById('pbSlidersContainer').innerHTML = html;
+    }
+
+    function adjustPbStat(stat, amount) {
+        pbCurrentStats[stat] += amount;
+        renderPointBuyRows();
+    }
+
+    function applyPointBuy() {
+        // 将购点界面算好的数值分发灌入主界面的九宫格
+        STATS_KEYS.forEach(stat => {
+            document.getElementById('val_' + stat).innerText = pbCurrentStats[stat];
+        });
+        autoUpdate();
+        closePointBuyModal();
+    }
+	
 </script>
+
+<div id="pointBuyModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 style="margin-top:0; margin-bottom: 16px; font-size: 18px;">属性购点 (Point Buy)</h3>
+        
+        <div class="form-group" style="margin-bottom: 16px;">
+            <label>购点规则</label>
+            <select id="pbTypeSelect" onchange="initPointBuy()">
+                <option value="32" selected>32 点购买</option>
+                <option value="27">27 点购买 (标准规则)</option>
+            </select>
+        </div>
+
+        <p style="font-size: 13px; color: #86868b; margin-bottom: 16px;">
+            剩余可用点数：<b id="pbPointsLeft" style="color:#0071e3; font-size: 16px;">32</b> / <span id="pbTotalPoints">32</span>
+        </p>
+
+        <div id="pbSlidersContainer"></div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
+            <button class="btn-custom" onclick="closePointBuyModal()" style="flex:none; padding: 10px 20px;">取消</button>
+            <button class="btn-continue" onclick="applyPointBuy()" style="margin-top:0; padding: 10px 20px; border-radius: 12px;">应用数值</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
