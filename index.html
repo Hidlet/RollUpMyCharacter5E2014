@@ -239,6 +239,11 @@
                 </select>
             </div>
         </div>
+		
+		<div class="tasha-check" style="margin-bottom: 14px;">
+            <input type="checkbox" id="overrideProfCheck" onchange="updateArmorOptions(); updateWeaponOptions(); checkShieldState(); autoUpdate();">
+            <label for="overrideProfCheck">解锁全装备熟练项 (适用于获取了额外防具/武器熟练的子职，如战争牧师)</label>
+        </div>
 
         <div class="form-row">
             <div class="form-group">
@@ -624,7 +629,8 @@
             for (let id of keys) {
                 if (!weaponData[id]) continue; // 容错校验
                 let w = weaponData[id];
-                let isProf = profs.includes(w.category) || profs.includes(id);
+                let overrideProf = document.getElementById('overrideProfCheck') ? document.getElementById('overrideProfCheck').checked : false;
+                let isProf = profs.includes(w.category) || profs.includes(id) || overrideProf;
                 let profText = isProf ? "" : " (无熟练)";
                 
                 // 不使用 disabled，利用内联 style 将字放置灰，保持选项可点击
@@ -666,7 +672,8 @@
         const shieldCheck = document.getElementById('shieldCheck');
         const shieldWrap = document.getElementById('shieldGroupWrap');
 
-        const allowedTypes = new Set([
+        let overrideProf = document.getElementById('overrideProfCheck') ? document.getElementById('overrideProfCheck').checked : false;
+        const allowedTypes = overrideProf ? new Set(['none', 'light', 'medium', 'heavy', 'shield']) : new Set([
             ...(classArmorProf[clsKey] || []),
             ...(raceArmorProf[raceKey] || [])
         ]);
@@ -899,7 +906,8 @@
         const armorSelect = document.getElementById('armorSelect');
         const unarmoredWrap = document.getElementById('unarmoredTypeWrap');
 
-        const allowedTypes = new Set([
+        let overrideProf = document.getElementById('overrideProfCheck') ? document.getElementById('overrideProfCheck').checked : false;
+        const allowedTypes = overrideProf ? new Set(['none', 'light', 'medium', 'heavy', 'shield']) : new Set([
             ...(classArmorProf[clsKey] || []),
             ...(raceArmorProf[raceKey] || [])
         ]);
@@ -1276,7 +1284,8 @@
         const weaponKey = document.getElementById('weaponSelect').value;
         const weapon = weaponData[weaponKey];
         const weaponProfs = classWeaponsProf[clsKey] || [];
-        const isWeaponProf = weaponProfs.includes(weapon.category) || weaponProfs.includes(weaponKey);
+        const overrideProf = document.getElementById('overrideProfCheck') ? document.getElementById('overrideProfCheck').checked : false;
+        const isWeaponProf = weaponProfs.includes(weapon.category) || weaponProfs.includes(weaponKey) || overrideProf;
         
         let atkAttrMod = 0;
         let atkAttrStr = "";
