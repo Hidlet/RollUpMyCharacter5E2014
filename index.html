@@ -311,12 +311,52 @@
         </div>
 
         <div class="btn-wrapper" id="wrap-btn1">
-            <button class="btn-continue" onclick="reveal(2)">继续选择种族</button>
+            <button class="btn-continue" onclick="reveal(2)">继续分配属性</button>
         </div>
     </div>
 
     <div id="step2" class="section">
-        <h2>2. 血脉与种族</h2>
+        <h2>2. 核心属性与成长</h2>
+        <p class="section-desc">可直接拖拽数值框交换位置。若使用“自定义”输入，则数值将作为最终结果，不再叠加后续的种族加成。</p>
+        
+        <div class="action-row">
+            <button class="btn-roll" onclick="rollStatPool()">🎲 4d6 掷点生成</button>
+            <button class="btn-custom" onclick="openPointBuyModal()">📊 属性购点</button>
+            <button id="btn-custom" class="btn-custom" onclick="toggleCustomize()">✏️ 自定义</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box"><label>力量 STR</label><div class="stat-value" id="val_str" data-stat="str" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
+            <div class="stat-box"><label>敏捷 DEX</label><div class="stat-value" id="val_dex" data-stat="dex" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
+            <div class="stat-box"><label>体质 CON</label><div class="stat-value" id="val_con" data-stat="con" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
+            <div class="stat-box"><label>智力 INT</label><div class="stat-value" id="val_int" data-stat="int" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
+            <div class="stat-box"><label>感知 WIS</label><div class="stat-value" id="val_wis" data-stat="wis" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
+            <div class="stat-box"><label>魅力 CHA</label><div class="stat-value" id="val_cha" data-stat="cha" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
+        </div>
+
+        <div id="asiContainer" style="display:none; margin-top: 24px; padding: 16px; background: rgba(0, 113, 227, 0.03); border-radius: 14px; border: 1px dashed #0071e3;">
+            <h3 style="margin-top:0; margin-bottom: 6px; font-size: 15px; color: #0071e3;">属性值提升 (ASI) / 专长</h3>
+            <p style="font-size: 12px; color: #86868b; margin-top: 0; margin-bottom: 12px; line-height: 1.5;">
+                基于当前等级与职业，你获得了 <b id="asiCount" style="color:#1d1d1f;">0</b> 次提升机会，共计 <b id="asiPointsTotal" style="color:#1d1d1f;">0</b> 点可用属性点（含专长替代）。<br>
+                剩余可分配：<b id="asiPointsLeft" style="color:#e74c3c; font-size: 14px;">0</b> 点 <i>(单属性最终上限为 20)</i>。
+            </p>
+            <div class="asi-grid">
+                <div class="asi-item"><label>STR</label><input type="number" id="asi_in_str" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
+                <div class="asi-item"><label>DEX</label><input type="number" id="asi_in_dex" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
+                <div class="asi-item"><label>CON</label><input type="number" id="asi_in_con" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
+                <div class="asi-item"><label>INT</label><input type="number" id="asi_in_int" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
+                <div class="asi-item"><label>WIS</label><input type="number" id="asi_in_wis" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
+                <div class="asi-item"><label>CHA</label><input type="number" id="asi_in_cha" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
+            </div>
+        </div>
+
+        <div class="btn-wrapper" id="wrap-btn2">
+            <button class="btn-continue" onclick="reveal(3)">继续选择种族与血脉</button>
+        </div>
+    </div>
+
+    <div id="step3" class="section">
+        <h2>3. 血脉与种族</h2>
         
         <div class="tasha-check">
             <input type="checkbox" id="tashaRules" onchange="updateRaceUI()">
@@ -364,46 +404,6 @@
                 </div>
             </div>
         </div>
-        <div class="btn-wrapper" id="wrap-btn2">
-            <button class="btn-continue" onclick="reveal(3)">继续分配属性</button>
-        </div>
-    </div>
-
-    <div id="step3" class="section">
-        <h2>3. 核心属性与成长</h2>
-        <p class="section-desc">可直接拖拽数值框交换位置，或点击自定义微调。</p>
-        
-        <div class="action-row">
-            <button class="btn-roll" onclick="rollStatPool()">🎲 4d6 掷点生成</button>
-            <button class="btn-custom" onclick="openPointBuyModal()">📊 属性购点</button>
-            <button id="btn-custom" class="btn-custom" onclick="toggleCustomize()">✏️ 自定义</button>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-box"><label>力量 STR</label><div class="stat-value" id="val_str" data-stat="str" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
-            <div class="stat-box"><label>敏捷 DEX</label><div class="stat-value" id="val_dex" data-stat="dex" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
-            <div class="stat-box"><label>体质 CON</label><div class="stat-value" id="val_con" data-stat="con" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
-            <div class="stat-box"><label>智力 INT</label><div class="stat-value" id="val_int" data-stat="int" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
-            <div class="stat-box"><label>感知 WIS</label><div class="stat-value" id="val_wis" data-stat="wis" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
-            <div class="stat-box"><label>魅力 CHA</label><div class="stat-value" id="val_cha" data-stat="cha" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">10</div></div>
-        </div>
-
-        <div id="asiContainer" style="display:none; margin-top: 24px; padding: 16px; background: rgba(0, 113, 227, 0.03); border-radius: 14px; border: 1px dashed #0071e3;">
-            <h3 style="margin-top:0; margin-bottom: 6px; font-size: 15px; color: #0071e3;">属性值提升 (ASI) / 专长</h3>
-            <p style="font-size: 12px; color: #86868b; margin-top: 0; margin-bottom: 12px; line-height: 1.5;">
-                基于当前等级与职业，你获得了 <b id="asiCount" style="color:#1d1d1f;">0</b> 次提升机会，共计 <b id="asiPointsTotal" style="color:#1d1d1f;">0</b> 点可用属性点（含专长替代）。<br>
-                剩余可分配：<b id="asiPointsLeft" style="color:#e74c3c; font-size: 14px;">0</b> 点 <i>(单属性最终上限为 20)</i>。
-            </p>
-            <div class="asi-grid">
-                <div class="asi-item"><label>STR</label><input type="number" id="asi_in_str" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
-                <div class="asi-item"><label>DEX</label><input type="number" id="asi_in_dex" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
-                <div class="asi-item"><label>CON</label><input type="number" id="asi_in_con" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
-                <div class="asi-item"><label>INT</label><input type="number" id="asi_in_int" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
-                <div class="asi-item"><label>WIS</label><input type="number" id="asi_in_wis" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
-                <div class="asi-item"><label>CHA</label><input type="number" id="asi_in_cha" value="0" min="0" oninput="validateASI(); autoUpdate();"></div>
-            </div>
-        </div>
-
         <div class="btn-wrapper" id="wrap-btn3">
             <button class="btn-continue" onclick="reveal(4)">继续选择技能</button>
         </div>
@@ -592,6 +592,9 @@
     let userSelectedClassSkills = new Set(); 
     let totalASIPoints = 0;
     const STATS_KEYS = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+    
+    // 新增：跟踪属性的生成来源，若是自定义（Custom）输入，则不再叠加种族加成
+    let statsSource = 'default';
 
     window.onload = function() {
         updateWeaponOptions();
@@ -1126,6 +1129,7 @@
         const btn = document.getElementById('btn-custom');
         
         if (isCustomizing) {
+            statsSource = 'custom'; // 新增：将属性来源设为自定义
             btn.innerHTML = "✅ 完成";
             btn.classList.add('active');
             STATS_KEYS.forEach(stat => {
@@ -1170,6 +1174,7 @@
 
     function rollStatPool() {
         if (isCustomizing) { toggleCustomize(); }
+        statsSource = 'roll'; // 新增：如果使用4d6则恢复种族加成
         let pool = [];
         for(let i=0; i<6; i++) pool.push(roll4d6DropLowest());
         pool.sort((a, b) => b - a);
@@ -1248,7 +1253,8 @@
             
             let sourceTag = useTasha ? "自选" : "种族";
             let detailText = `基数 ${baseVal}`;
-            if (currentBonus[stat] > 0) detailText += ` (+${currentBonus[stat]}${sourceTag})`;
+            
+            if (currentBonus[stat] > 0) detailText += ` (+${currentBonus[stat]} ${sourceTag})`;
             if (asiVal > 0) detailText += ` (+${asiVal} ASI)`;
 
             htmlContent += `
@@ -1266,7 +1272,7 @@
         htmlContent += `</div>`;
         document.getElementById('res_stats_container').innerHTML = htmlContent;
 
-        // --- 新增：物理攻击与法术 DC 结算 ---
+        // --- 物理攻击与法术 DC 结算 ---
         const weaponKey = document.getElementById('weaponSelect').value;
         const weapon = weaponData[weaponKey];
         const weaponProfs = classWeaponsProf[clsKey] || [];
@@ -1471,12 +1477,8 @@
         document.getElementById('pbSlidersContainer').innerHTML = html;
     }
 
-    function adjustPbStat(stat, amount) {
-        pbCurrentStats[stat] += amount;
-        renderPointBuyRows();
-    }
-
     function applyPointBuy() {
+        statsSource = 'pb'; // 新增：如果使用购点则恢复种族加成
         // 将购点界面算好的数值分发灌入主界面的九宫格
         STATS_KEYS.forEach(stat => {
             document.getElementById('val_' + stat).innerText = pbCurrentStats[stat];
